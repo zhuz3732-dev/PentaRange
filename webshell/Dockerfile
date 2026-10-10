@@ -3,8 +3,12 @@
 # a server that honours it, and a webshell only means something to a server that runs it.
 FROM php:8.2-apache
 
-RUN a2enmod php8 rewrite headers \
- && sed -ri 's/^Listen 80$/Listen 8081/' /etc/apache2/ports.conf \
+# The module is named `php`, not `php8`. The official images load mod_php via
+# /etc/apache2/mods-available/php.load, so `a2enmod php8` fails with "Module php8 does not exist".
+# The port remap appends to ports.conf instead of rewriting the existing `Listen 80` line, which
+# keeps this from breaking when the Debian base image changes its defaults.
+RUN a2enmod rewrite headers \
+ && printf '\nListen 8081\n' >> /etc/apache2/ports.conf \
  && sed -ri 's/:80>/:8081>/' /etc/apache2/sites-available/000-default.conf
 
 # AllowOverride All is what makes the high tier (.htaccess override) possible. Leaving it at None
