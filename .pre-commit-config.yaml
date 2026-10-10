@@ -3,16 +3,21 @@
 #   pip install pre-commit && pre-commit install
 #   pre-commit run --all-files
 #
-# Scope note: only Python-only hooks are remote. actionlint and gitleaks are NOT pulled as
-# pre-commit mirrors, on purpose:
+# Scope: this config holds ONLY the pure-Python hooks, so `pre-commit run --all-files` behaves
+# identically on a laptop and on a CI runner. Anything that needs an external binary is
+# deliberately excluded:
 #
-#   * their mirrors compile a Go binary from source, which needs proxy.golang.org. That host is
-#     unreachable on some networks, and a hook that fails to install is worse than no hook.
-#   * both already have dedicated CI jobs in .github/workflows/validate.yml running the official
-#     actions against the same revisions.
+#   actionlint  -> job `actionlint` in .github/workflows/validate.yml
+#   gitleaks    -> job `gitleaks`   in .github/workflows/validate.yml
 #
-# Install them as local binaries to get them on the commit path too:
+# Both were briefly wired in here as two different things - first as pre-commit mirrors (which
+# compile a Go binary from source and need proxy.golang.org), then as `language: system` hooks.
+# The mirrors fail to install on networks without access to the Go proxy; the system hooks fail on
+# CI runners that do not have the binary. A gate that only works on one machine is not a gate.
+#
+# Run them by hand if you want them before a commit:
 #   winget install rhysd.actionlint Gitleaks.Gitleaks
+#   actionlint && gitleaks protect --staged --config .gitleaks.toml
 minimum_pre_commit_version: "3.5.0"
 
 repos:
@@ -41,19 +46,3 @@ repos:
         files: ^app/.*\.py$
       - id: ruff-format
         files: ^app/.*\.py$
-
-  # These two shell out to binaries on PATH (language: system), so an absent binary is reported
-  # as "not found" instead of triggering a source build.
-  - repo: local
-    hooks:
-      - id: actionlint-local
-        name: actionlint
-        entry: actionlint
-        language: system
-        files: ^\.github/workflows/.*\.ya?ml$
-        pass_filenames: false
-      - id: gitleaks-local
-        name: gitleaks
-        entry: gitleaks protect --staged --config .gitleaks.toml --no-banner --redact
-        language: system
-        pass_filenames: false
