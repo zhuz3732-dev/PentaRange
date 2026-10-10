@@ -1,8 +1,18 @@
-# pre-commit (https://pre-commit.com) - the local half of the quality gate. CI runs the same
-# hooks, so "it passed locally" means something.
+# pre-commit (https://pre-commit.com) - the local half of the quality gate.
 #
 #   pip install pre-commit && pre-commit install
 #   pre-commit run --all-files
+#
+# Scope note: only Python-only hooks are remote. actionlint and gitleaks are NOT pulled as
+# pre-commit mirrors, on purpose:
+#
+#   * their mirrors compile a Go binary from source, which needs proxy.golang.org. That host is
+#     unreachable on some networks, and a hook that fails to install is worse than no hook.
+#   * both already have dedicated CI jobs in .github/workflows/validate.yml running the official
+#     actions against the same revisions.
+#
+# Install them as local binaries to get them on the commit path too:
+#   winget install rhysd.actionlint Gitleaks.Gitleaks
 minimum_pre_commit_version: "3.5.0"
 
 repos:
@@ -11,6 +21,7 @@ repos:
     hooks:
       - id: check-yaml
         args: [--allow-multiple-documents]
+      - id: check-json
       - id: check-merge-conflict
       - id: check-added-large-files
         args: [--maxkb=512]
@@ -31,17 +42,18 @@ repos:
       - id: ruff-format
         files: ^app/.*\.py$
 
-  - repo: https://github.com/rhysd/actionlint
-    rev: v1.7.7
+  # These two shell out to binaries on PATH (language: system), so an absent binary is reported
+  # as "not found" instead of triggering a source build.
+  - repo: local
     hooks:
-      - id: actionlint
-
-  - repo: https://github.com/gitleaks/gitleaks
-    rev: v8.23.1
-    hooks:
-      - id: gitleaks
-
-  - repo: https://github.com/shellcheck-py/shellcheck-py
-    rev: v0.10.0.1
-    hooks:
-      - id: shellcheck
+      - id: actionlint-local
+        name: actionlint
+        entry: actionlint
+        language: system
+        files: ^\.github/workflows/.*\.ya?ml$
+        pass_filenames: false
+      - id: gitleaks-local
+        name: gitleaks
+        entry: gitleaks protect --staged --config .gitleaks.toml --no-banner --redact
+        language: system
+        pass_filenames: false

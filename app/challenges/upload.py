@@ -4,9 +4,9 @@ low    - anything goes, extensions included
 medium - only the Content-Type header is inspected, and it is attacker-controlled
 high   - extension blacklist plus .htaccess override
 """
+
 import os
 
-import flask
 
 from config import Config
 from db import fetch_flag

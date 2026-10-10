@@ -4,6 +4,7 @@ low    - reflected with no encoding whatsoever
 medium - stored, and the admin bot endpoint reads the cookie back
 high   - a DOM sink that never returns to the server
 """
+
 import html
 
 from db import raw_cursor

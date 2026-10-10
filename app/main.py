@@ -1,4 +1,5 @@
 """PentaRange entry point."""
+
 import os
 import sys
 import traceback
@@ -108,6 +109,7 @@ def challenge(level: str, tier: str):
         source=source,
     )
 
+
 def _read_source_for(level: str) -> str:
     path = os.path.join(APP_DIR, "challenges", f"{level}.py")
     try:
@@ -124,7 +126,8 @@ def source_list():
     if not Config.SOURCE_DISCLOSURE:
         abort(404)
     files = sorted(
-        f for f in os.listdir(os.path.join(APP_DIR, "challenges"))
+        f
+        for f in os.listdir(os.path.join(APP_DIR, "challenges"))
         if f.endswith(".py") and f != "__init__.py"
     )
     return render_template("source_list.html", files=files)

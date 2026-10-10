@@ -9,6 +9,7 @@ Each module exposes one callable per tier:
 ``q`` is the raw ``?q=`` value (never sanitised here on purpose) and ``request`` is the live Flask
 request, so modules that need POST bodies, headers or cookies can reach them.
 """
+
 from . import deserialize, sqli, ssrf, upload, xss
 
 REGISTRY = {}

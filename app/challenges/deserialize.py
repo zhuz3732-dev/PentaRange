@@ -4,6 +4,7 @@ low    - ``pickle.loads`` on attacker input: direct RCE
 medium - ``yaml.load`` with the default loader: ``!!python/object/apply`` reaches any callable
 high   - attribute injection into an object that is later consumed by a dangerous sink
 """
+
 import base64
 import pickle
 
@@ -15,7 +16,9 @@ from db import fetch_flag
 def low(q: str, request) -> str:
     """The payload arrives base64-encoded in ``q`` and goes straight into pickle."""
     if not q:
-        sample = base64.b64encode(pickle.dumps({"user": "guest", "role": "user"})).decode()
+        sample = base64.b64encode(
+            pickle.dumps({"user": "guest", "role": "user"})
+        ).decode()
         return (
             "把 pickle 字节 base64 后放进 ?q=\n"
             f"当前默认值: {sample}\n"

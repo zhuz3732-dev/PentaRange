@@ -12,6 +12,7 @@ Two access styles live side by side on purpose:
 Keeping both in one module makes the diff between vulnerable and fixed code small and readable,
 which is what a learner needs to see.
 """
+
 import contextlib
 import time
 
@@ -38,7 +39,9 @@ def connect():
         except Exception as exc:  # noqa: BLE001 - lab code, surface anything
             last = exc
             time.sleep(1)
-    raise RuntimeError(f"cannot reach MySQL at {Config.DB_HOST}:{Config.DB_PORT}: {last}")
+    raise RuntimeError(
+        f"cannot reach MySQL at {Config.DB_HOST}:{Config.DB_PORT}: {last}"
+    )
 
 
 @contextlib.contextmanager
@@ -58,9 +61,11 @@ def safe_cursor():
     conn = connect()
     try:
         with conn.cursor() as cur:
+
             def query(sql, params=None):
                 cur.execute(sql, params or ())
                 return cur.fetchall()
+
             yield query
     finally:
         conn.close()

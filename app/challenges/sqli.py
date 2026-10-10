@@ -4,6 +4,7 @@ low    - classic UNION-based, error messages leaked to the page
 medium - the query is wrapped in a way that hides output; boolean/time blind only
 high   - a naive keyword blacklist sits in front of the same concatenation
 """
+
 from db import fetch_flag, raw_cursor
 
 
@@ -22,9 +23,7 @@ def medium(q: str, request) -> str:
     """Only a boolean leaks: the page tells you whether the row count changed, nothing more."""
     if not q:
         return "试试 ?q=1"
-    sql = (
-        "SELECT COUNT(*) AS n FROM users WHERE username = '" + q + "'"
-    )
+    sql = "SELECT COUNT(*) AS n FROM users WHERE username = '" + q + "'"
     with raw_cursor() as cur:
         cur.execute(sql)
         row = cur.fetchone()
@@ -53,6 +52,7 @@ def high(q: str, request) -> str:
         cur.execute(sql)
         rows = cur.fetchall()
     return sql + "\n\n" + _table(rows, "high")
+
 
 def _table(rows, tier: str) -> str:
     if not rows:

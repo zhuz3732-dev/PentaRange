@@ -4,6 +4,7 @@ Everything is read from the environment so the same image runs in every tier. Th
 deliberately weak (fixed SECRET_KEY, debug on) because a lab that is secure by default teaches
 nothing.
 """
+
 import os
 
 
