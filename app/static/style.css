@@ -1,0 +1,51 @@
+:root {
+  --bg: #0d1117;
+  --panel: #161b22;
+  --line: #30363d;
+  --fg: #e6edf3;
+  --dim: #8b949e;
+  --accent: #f0883e;
+  --ok: #3fb950;
+  --bad: #f85149;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--fg);
+  font: 15px/1.6 ui-sans-serif, -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif;
+}
+header {
+  border-bottom: 1px solid var(--line); padding: 14px 24px;
+  display: flex; align-items: baseline; gap: 14px; background: var(--panel);
+  position: sticky; top: 0;
+}
+header h1 { margin: 0; font-size: 18px; letter-spacing: .5px; }
+header .fangs { color: var(--accent); font-weight: 700; }
+header .warn { color: var(--bad); font-size: 12px; margin-left: auto; }
+main { max-width: 980px; margin: 0 auto; padding: 28px 24px 80px; }
+h2 { font-size: 20px; margin: 28px 0 8px; }
+h3 { font-size: 15px; margin: 22px 0 6px; color: var(--accent); }
+a { color: var(--accent); }
+table { border-collapse: collapse; width: 100%; margin: 12px 0; }
+th, td { border: 1px solid var(--line); padding: 7px 10px; text-align: left; }
+th { background: var(--panel); color: var(--dim); font-weight: 600; font-size: 13px; }
+code, pre {
+  font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: var(--panel); border: 1px solid var(--line); border-radius: 6px;
+}
+code { padding: 1px 5px; font-size: 13px; }
+pre { padding: 14px; overflow-x: auto; font-size: 13px; }
+input, textarea, button, select {
+  background: #0b0f14; color: var(--fg); border: 1px solid var(--line);
+  border-radius: 6px; padding: 7px 10px; font: inherit;
+}
+button { cursor: pointer; background: var(--panel); }
+button:hover { border-color: var(--accent); }
+.tier { display: inline-block; font-size: 11px; padding: 1px 8px; border-radius: 10px; border: 1px solid var(--line); color: var(--dim); }
+.tier.low { color: var(--ok); border-color: var(--ok); }
+.tier.medium { color: var(--accent); border-color: var(--accent); }
+.tier.high { color: var(--bad); border-color: var(--bad); }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 16px 18px; margin: 14px 0; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; }
+.note { color: var(--dim); font-size: 13px; }
+.ok { color: var(--ok); } .bad { color: var(--bad); }
+footer { border-top: 1px solid var(--line); padding: 18px 24px; color: var(--dim); font-size: 13px; }

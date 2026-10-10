@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block body %}
+<h2>关卡列表</h2>
+<p class="note">每关分 Low / Medium / High 三档。目标 flag 存放在 <code>flags</code> 表中，拿到即通关。</p>
+
+{% for level, info in levels.items() %}
+<div class="card">
+  <h3>{{ info.title }} <span class="note">— {{ info.summary }}</span></h3>
+  <table>
+    <tr><th>难度</th><th>目标</th><th>入口</th></tr>
+    {% for tier, goal in info.tiers.items() %}
+    <tr>
+      <td><span class="tier {{ tier }}">{{ tier }}</span></td>
+      <td>{{ goal }}</td>
+      <td><a href="/challenge/{{ level }}/{{ tier }}">/challenge/{{ level }}/{{ tier }}</a></td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
+{% endfor %}
+
+<h2>顺手能查的东西</h2>
+<div class="card">
+  <table>
+    <tr><th>用途</th><th>地址</th></tr>
+    <tr><td>本服务源码</td><td><a href="/source">/source</a></td></tr>
+    <tr><td>用户表（教学用裸接口，故意无鉴权）</td><td><a href="/api/users">/api/users</a></td></tr>
+  </table>
+</div>
+{% endblock %}

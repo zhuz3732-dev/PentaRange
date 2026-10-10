@@ -1,0 +1,29 @@
+# gitleaks (https://github.com/gitleaks/gitleaks) config.
+#
+# This lab SHIPS fake credentials on purpose: seed.sql carries a plaintext admin password, and the
+# challenge modules contain placeholder tokens. Those are the teaching material, not leaked
+# secrets, so they are allowlisted here rather than silently rewritten. Everything else - real
+# PATs, real keyring dumps - must still be caught.
+title = "PentaRange gitleaks config"
+extends = ["default"]
+
+[allowlist]
+description = "Intentional lab fixtures and management tooling"
+
+# The seed data is deliberately full of weak credentials.
+paths = [
+  '''app/seed\.sql''',
+  '''app/config\.py''',
+  '''app/db\.py''',
+]
+
+# The management tooling keeps a credential file outside the repo; make sure a stray copy never
+# trips up a scan while the real thing still would.
+regexTarget = "match"
+regexes = [
+  # documented placeholder / example tokens in docs
+  '''ghp_xxxxxxxxxxxx''',
+  '''github_pat_xxxxxxxxxx''',
+  # the deliberate lab password, referenced from README and CONTRIBUTING
+  '''PentaRange_admin_2026''',
+]

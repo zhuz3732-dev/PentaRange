@@ -1,0 +1,5 @@
+# Ships with the image so the hosted directory behaves like a realistic Apache docroot.
+# The `high` upload tier teaches that an attacker who can write .htaccess here can re-enable
+# execution for extensions the blacklist forgot.
+Options Indexes FollowSymLinks
+AddType application/x-httpd-php .php .php8 .phtml .phar

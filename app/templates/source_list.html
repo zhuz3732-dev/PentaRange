@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block body %}
+<h2>源码浏览</h2>
+<p class="note">故意暴露全部关卡源码 —— 看懂才能打通。</p>
+<div class="card">
+  <table>
+    <tr><th>模块</th><th>打开</th></tr>
+    {% for f in files %}
+    <tr><td><code>{{ f }}</code></td><td><a href="/source/{{ f }}">查看</a></td></tr>
+    {% endfor %}
+  </table>
+</div>
+{% endblock %}

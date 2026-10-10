@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+
+# Uploads are runtime state, never source
+app/uploads/
+uploads/
+
+# Editor / OS
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+
+# Local overrides
+.env
+docker-compose.override.yml
+
+# Never commit credentials
+*token*
+*cred*.json

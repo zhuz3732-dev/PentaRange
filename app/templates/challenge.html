@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}{{ level }} / {{ tier }}{% endblock %}
+{% block body %}
+<h2>{{ title }} <span class="tier {{ tier }}">{{ tier }}</span></h2>
+<p class="note">{{ goal }}</p>
+
+{# How the query travels to the handler differs per level, and that difference is the lesson:
+   reflected levels read the query string (reachable with a plain link, so a victim can be lured
+   into it), while stored levels only accept POST (the payload comes from the victim's own browser
+   and then persists server-side). #}
+{% if level == 'xss' and tier == 'medium' %}
+<form method="post" action="/challenge/{{ level }}/{{ tier }}">
+  <input name="q" value="" placeholder="留言内容" size="46">
+  <button type="submit">提交留言</button>
+</form>
+{% else %}
+<form method="get" action="/challenge/{{ level }}/{{ tier }}">
+  <input name="q" value="{{ q }}" placeholder="输入" size="46">
+  <button type="submit">提交</button>
+</form>
+{% endif %}
+
+{% if error %}<p class="bad">错误：{{ error }}</p>{% endif %}
+
+{% if result is not none %}
+<div class="card">
+  <h3>结果</h3>
+  {# Tier-dependent on purpose:
+
+     low / medium - the handler's output contains the learner's raw input and is emitted with
+                    |safe, so the payload renders as live markup straight in the document.
+     high         - the handler escaped it on the server, so this branch stays escaped. The defect
+                    for that tier lives in the client-side sink at the bottom of the page instead. #}
+  <pre>{% if level == 'xss' and tier in ('low', 'medium') %}{{ result | safe }}{% else %}{{ result }}{% endif %}</pre>
+</div>
+{% endif %}
+
+{% if source %}
+<div class="card">
+  <h3>本关源码</h3>
+  <pre>{{ source }}</pre>
+</div>
+{% endif %}
+
+<p class="note"><a href="/">← 返回关卡列表</a></p>
+
+{# The path the learner's input takes back into the document. Deliberately tier-dependent:
+
+   low / medium - Jinja emits the raw value with |safe. Nothing is encoded anywhere.
+   high         - the handler escaped correctly on the server, but this script reads the *decoded*
+                  query string out of the URL and writes it with innerHTML. Escaping on output
+                  does not protect a DOM sink. #}
+<div id="echo" class="note"></div>
+<script>
+(function () {
+  var raw = new URLSearchParams(location.search).get('q');
+  if (raw === null || raw === '') return;
+  var box = document.getElementById('echo');
+  {% if level == 'xss' and tier == 'high' %}
+  box.innerHTML = decodeURIComponent(raw);
+  {% else %}
+  box.innerHTML = raw;
+  {% endif %}
+})();
+</script>
+{% endblock %}

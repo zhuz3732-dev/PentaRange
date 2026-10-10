@@ -1,0 +1,87 @@
+# PentaRange - isolated lab. Do not expose any of these ports to a public network.
+#
+# Topology
+#   web       Flask app, the challenge portal         127.0.0.1:8000
+#   db        MySQL, seeded from app/seed.sql           <internal only>
+#   webshell  Apache + mod_php over the uploads dir    127.0.0.1:8081
+#   adminer   DB console, another easy win to find     127.0.0.1:8082
+#
+# All ports are bound to 127.0.0.1 explicitly. Publishing them on 0.0.0.0 is the single most common
+# way people accidentally put a deliberately vulnerable stack on the internet.
+services:
+
+  db:
+    image: mysql:8.0
+    container_name: pentarange-db
+    command:
+      - --default-authentication-plugin=mysql_native_password
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    environment:
+      MYSQL_ROOT_PASSWORD: PentaRange_admin_2026
+      MYSQL_DATABASE: pentarange
+    volumes:
+      - ./app/seed.sql:/docker-entrypoint-initdb.d/10-seed.sql:ro
+      - db-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-pPentaRange_admin_2026"]
+      interval: 5s
+      timeout: 5s
+      retries: 24
+    networks: [lab]
+
+  web:
+    build: ./app
+    container_name: pentarange-web
+    environment:
+      DB_HOST: db
+      DB_PORT: "3306"
+      DB_NAME: pentarange
+      DB_USER: root
+      DB_PASSWORD: PentaRange_admin_2026
+      SECRET_KEY: pentarange-dev-secret-do-not-reuse
+      UPLOAD_DIR: /var/www/pentarange/uploads
+      SOURCE_DISCLOSURE: "1"
+      FLASK_DEBUG: "1"
+    ports:
+      - "127.0.0.1:8000:8000"
+    volumes:
+      - uploads:/var/www/pentarange/uploads
+      - ./app:/var/www/pentarange
+    depends_on:
+      db:
+        condition: service_healthy
+    networks: [lab]
+
+  webshell:
+    build: ./webshell
+    container_name: pentarange-webshell
+    ports:
+      - "127.0.0.1:8081:8081"
+    volumes:
+      # The same volume `web` writes into. This is the bridge that makes an uploaded .php file
+      # actually run instead of just sitting on disk.
+      - uploads:/var/www/html
+    depends_on:
+      - web
+    networks: [lab]
+
+  adminer:
+    image: adminer:4
+    container_name: pentarange-adminer
+    environment:
+      ADMINER_DEFAULT_SERVER: db
+    ports:
+      - "127.0.0.1:8082:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks: [lab]
+
+volumes:
+  db-data:
+  uploads:
+
+networks:
+  lab:
+    driver: bridge

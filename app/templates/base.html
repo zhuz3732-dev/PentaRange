@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}{{ config.APP_NAME }}{% endblock %} · PentaRange</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<header>
+  <h1><span class="fangs">▚</span> PentaRange</h1>
+  <span class="note">漏洞靶场</span>
+  <span class="warn">⚠ 故意存在漏洞 · 禁止公网部署</span>
+</header>
+<main>
+  {% block body %}{% endblock %}
+</main>
+<footer>
+  PentaRange · 本地隔离环境教学用 · 所有漏洞均为有意设计
+</footer>
+</body>
+</html>
