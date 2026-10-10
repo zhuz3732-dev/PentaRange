@@ -1,7 +1,7 @@
 # Apache + mod_php. This is the service that actually executes what the upload challenges produce.
 # It exists because "the file landed on disk" is not an exploit: .htaccess only means something to
 # a server that honours it, and a webshell only means something to a server that runs it.
-FROM php:8.2-apache
+FROM php:8.5-apache
 
 # The module is named `php`, not `php8`. The official images load mod_php via
 # /etc/apache2/mods-available/php.load, so `a2enmod php8` fails with "Module php8 does not exist".
