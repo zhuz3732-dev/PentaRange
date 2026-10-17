@@ -1,6 +1,6 @@
 # PentaRange web service. Intentionally NOT hardened: runs as root so the file-upload and
 # .htaccess challenges actually have something to write to and something to override.
-FROM python:3.11-slim
+FROM python:3.14-slim
 
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1
